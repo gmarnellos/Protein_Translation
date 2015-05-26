@@ -22,13 +22,12 @@ if (move_uploaded_file($_FILES['uploadFile']['tmp_name'], $uploadfile)) {
  //   echo "File $uploadfile  was not successfully uploaded.\n";
 }
 
-system("mkdir -p /tmp/$tempname");
+$output=system("perl translate_all_frames1_3.pl -in $uploadfile -out /var/www/html/minilims/files/$outfasta -frames $numframes -minlength $minlength", $retval);
 
-$output=system("perl translate_all_frames1_3.pl -in $uploadfile -out /tmp/$tempname/$outfasta -frames $numframes -minlength $minlength", $retval);
 
-$htmlResults = '<br/><br/><br/> </pre><hr /> </pre>' . "The results have been written to: /tmp/$tempname/$outfasta" . ' </pre><hr /> </pre>';
+//$htmlResults = '<br/><br/><br/> </pre><hr /> </pre>' . "The results have been written to: /tmp/$tempname/$outfasta" . ' </pre><hr /> </pre>';
 
-//echo nl2br( file_get_contents("/tmp/$tempname/$outfasta") );
+$htmlResults = '<br/><br/><br/> </pre><hr /> </pre>' . "The results have been written to: <a href=http://msprl.rc.fas.harvard.edu/minilims/misc/MiniFileView.php/$outfasta> $outfasta </a>" . ' </pre><hr /> </pre>';
 
 print $page->toHTML("Protein Translation Results", $htmlResults);
 

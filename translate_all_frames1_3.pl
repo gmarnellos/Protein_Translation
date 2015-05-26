@@ -36,6 +36,7 @@ my $seqout = Bio::SeqIO->new( -format => $oformat, -file => ">$outfile" );
 my $total_input_seqs = 0;
 my $total_output_seqs = 0;
 while( (my $seq = $seqin->next_seq()) ) {
+  if (length($seq->seq) >= 1) {
     $total_input_seqs++;
     my $id = $seq->id;
     my $revseq = $seq->revcom;
@@ -46,6 +47,7 @@ while( (my $seq = $seqin->next_seq()) ) {
 	$total_output_seqs += @peptides;
 	$seqout->write_seq($_) for @peptides;
     }
+  }
 }
 
 warn "Translated $total_input_seqs seqs from $infile in $nframes frames
@@ -55,8 +57,15 @@ exit;
 sub get_peptides {
     my ($seq, $frame, $is_reversed) = @_;
     my $id = $seq->id;
-    $id =~ /gi\|(\d+)\|/ or die "Unexpected id '$id' doesn't have gi||\n";
-    my $gi = $1;
+    my $gi = '';
+    if ($id =~ /gi\|(\d+)\|/) {
+      $gi = $1;
+    } else {
+      $id =~ /^\s*(\S+)\s*/ or die "Unrecognized sequence header format: '$id' \n";
+      $gi = $1;
+    }
+    #$id =~ /gi\|(\d+)\|/ or die "Unexpected id '$id' doesn't have gi||\n";
+    #my $gi = $1;
     my $desc = $seq->description;
     my $pseq = $seq->translate(-frame=>$frame);
     my $full_translation = $pseq->seq;
