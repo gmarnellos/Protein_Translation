@@ -57,16 +57,16 @@ exit;
 sub get_peptides {
     my ($seq, $frame, $is_reversed) = @_;
     my $id = $seq->id;
+    my $desc = $seq->description;
     my $gi = '';
     if ($id =~ /gi\|(\d+)\|/) {
+      $gi = $1;
+    } elsif ($desc =~ /gi\|(\d+)\|/) {
       $gi = $1;
     } else {
       $id =~ /^\s*(\S+)\s*/ or die "Unrecognized sequence header format: '$id' \n";
       $gi = $1;
     }
-    #$id =~ /gi\|(\d+)\|/ or die "Unexpected id '$id' doesn't have gi||\n";
-    #my $gi = $1;
-    my $desc = $seq->description;
     my $pseq = $seq->translate(-frame=>$frame);
     my $full_translation = $pseq->seq;
     my $piece_count = 0;
@@ -81,7 +81,9 @@ sub get_peptides {
 	    my $subid = $gi . ($is_reversed ? "r" : "f") . "$frame.$piece_count";
 	    my $framedesc = $is_reversed ? -$frame : $frame;
 	    $framedesc = -3 if $is_reversed && $framedesc == 0;
-	    my $subdesc = "$desc translated in frame $framedesc, piece $piece_count (aa $start_pos-$end_pos)";
+	    my @desc_chunks = split(",", $desc);
+	    #my $chunk = substr($desc_chunks[0], 0, 40);
+	    my $subdesc = "$desc_chunks[0] ($framedesc:$start_pos-$end_pos)";
 	    my $subseq = Bio::Seq->new(
 		-display_id	=> $subid,
 		-description	=> $subdesc,
