@@ -23,7 +23,7 @@ $html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org
    </p>
 
    <p>
-   Minimum Length of peptides to return: <input type='text' name='MinLength' />
+   Minimum Length of proteins to return: <input type='text' name='MinLength' />
    </p>
 
    <p>
